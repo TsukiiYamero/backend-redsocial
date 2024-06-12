@@ -1,0 +1,2 @@
+start cmd.exe /k "cd /d C:\Program Files\MongoDB\Server\7.0\bin && mongod.exe --dbpath C:\Users\diego\Desktop\programming\self\nodejs\db"
+start cmd.exe /k "cd /d C:\Users\diego\Desktop\programming\self\nodejs\redsocial && npm run start:watch"
