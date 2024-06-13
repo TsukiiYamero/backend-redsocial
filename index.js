@@ -1,25 +1,39 @@
 /* importar */
-const connection = require("./connection");
-const express = require("express");
-const cors = require("cors");
+import connection from "./connection.js";
+import express, { json, urlencoded, } from "express";
+import cors from "cors";
+import { RouteFollow, RoutePublications, RouteUser } from "./utils/utils.js";
+import { userRouter } from "./routes/user.js";
+import routerFollow from "./routes/follow.js";
+import routerPublication from "./routes/publications.js";
+
 /* conexion */
 connection();
 
 /* config cors */
 
-const app = require()
+const app = express();
 const port = 3900;
 
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(json());
+app.use(urlencoded({ extended: true }));
 
 /* conversion de datos */
 
 /* rutas */
+
+app.use(`/api/v1/user`, userRouter);
+app.use('/api/v1/follow', routerFollow);
+app.use('/api/v1/publications', routerPublication);
+
+
+
 app.get('/test', (req, res) => {
+    console.log('hola mundo');
     return res.status(200).json({ message: 'hola mundo', id: '1' })
 })
+
 
 /* sevidor http */
 app.listen(port, () => {

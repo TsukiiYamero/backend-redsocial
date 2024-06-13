@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Api Rest Stack MERN",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start:watch": "node --watch index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
