@@ -1,5 +1,6 @@
 import { userM } from "../models/user.js";
 import bcrypt from 'bcrypt';
+import { createToken } from "../services/jwt.js";
 
 export const testUserController = (req, res) => {
     /* res.json('Test user controller'); */
@@ -46,7 +47,7 @@ export const userRegisterC = async (req, res) => {
         userToSave.password = hashedPassword;
         await userToSave.save();
 
-        return res.status(200).json({
+        return res.status(201).json({
             message: 'Usuario registrado correctamente',
             status: "success",
         });
@@ -60,4 +61,54 @@ export const userRegisterC = async (req, res) => {
         });
     }
 
+}
+
+export const loginC = async (req, res) => {
+    try {
+        const params = req.body;
+
+        if (!params || !params.email || !params.password) {
+            return res.status(400).json({
+                message: 'Faltan datos por enviar',
+                status: "error"
+            });
+        }
+
+        const exist = await userM.findOne({ email: params.email });
+
+        if (!exist) {
+            return res.status(404).json({
+                message: 'El usuario no existe',
+                status: "error"
+            });
+        }
+
+        const passwordMatch = await bcrypt.compare(params.password, exist.password);
+
+        if (!passwordMatch) {
+            return res.status(401).json({
+                message: 'Contraseña incorrecta',
+                status: "error"
+            });
+        }
+
+        const token = createToken(exist);
+
+        const { password, ...user } = exist.toObject();
+
+        return res.status(200).json({
+            message: 'Usuario logueado correctamente',
+            status: "success",
+            user: user,
+            token
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            message: 'Error al loguear el usuario',
+            status: "error"
+        });
+    }
 }

@@ -1,10 +1,12 @@
 import { Router } from "express";
-import { testUserController, userRegisterC } from "../controllers/user.js";
-import { RouteUser, RouteUserRegister } from "../utils/utils.js";
+import { loginC, testUserController, userRegisterC } from "../controllers/user.js";
+import { RouteLogin, RouteUser, RouteUserRegister } from "../utils/utils.js";
+import { ensureAuth } from "../middlewares/auth.js";
 
 const router = Router();
-router.get(RouteUser, testUserController);
+router.get(RouteUser, ensureAuth, testUserController);
 router.post(RouteUserRegister, userRegisterC)
+router.post(RouteLogin, loginC)
 
 
 
