@@ -112,3 +112,31 @@ export const loginC = async (req, res) => {
         });
     }
 }
+
+export const profileC = async (req, res) => {
+    try {
+        const user = await userM.findById(req.params.id).select('-password -role -__v');
+        if (!user) {
+            return res.status(404).json({
+                message: 'El usuario no existe',
+                status: "error"
+            });
+        }
+
+        const { ...userData } = user.toObject();
+
+        return res.status(200).json({
+            message: 'Usuario encontrado correctamente',
+            status: "success",
+            user: userData
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            message: 'Error al buscar el usuario',
+            status: "error"
+        });
+    }
+}
