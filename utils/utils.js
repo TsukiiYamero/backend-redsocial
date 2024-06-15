@@ -4,6 +4,7 @@ export const RouteUser = '/test-user';
 export const RouteUserRegister = '/register';
 export const RouteLogin = '/login';
 export const RouteProfile = '/profile';
+export const RouteListUsers = '/list/:page?';
 
 
 

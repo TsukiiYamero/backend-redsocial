@@ -140,3 +140,47 @@ export const profileC = async (req, res) => {
         });
     }
 }
+
+export const listUsersC = async (req, res) => {
+    try {
+        const page = req.param.page ? parseInt(req.params.page, 10) : 1;
+        const itemsPerPage = req.query.limi ? parseInt(req.query.limi, 10) : 5;
+        const option = {
+            page: page,
+            limit: itemsPerPage,
+            select: '-password -role -__v'
+        }
+
+        const users = await userM.paginate({}, option);
+
+        if (!users || users.docs.length === 0) {
+            return res.status(404).json({
+                message: 'No se encontraron usuarios',
+                status: "error"
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Usuarios encontrados correctamente',
+            status: "success",
+            users: users.docs,
+            totalDocs: users.totalDocs,
+            totalPages: users.totalPages,
+            page: users.page,
+            pagingCounter: users.pagingcounger,
+            hasPrevPage: users.hasPrevPage,
+            hasNextPage: users.hasNextPage,
+            prevPage: users.prevPage,
+            nextPage: users.nextPage
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            message: 'Error al buscar los usuarios',
+            status: "error"
+        });
+    }
+}
+
