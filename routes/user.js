@@ -19,7 +19,7 @@ const router = Router();
 /* user */
 router.get(RouteUser, ensureAuth, testUserController);
 router.put(RouteUpdateUser, ensureAuth, updateUserC);
-router.get('/avatar/:file', ensureAuth, avatarC);
+router.get('/avatar/:file', avatarC);
 router.post(RouteUpload, [ensureAuth, uploads.single('file0')], uploadFilesC);
 
 

@@ -25,7 +25,7 @@ app.use(urlencoded({ extended: true }));
 
 app.use(`/api/v1/user`, userRouter);
 app.use('/api/v1/follow', routerFollow);
-app.use('/api/v1/publications', routerPublication);
+app.use('/api/v1/publication', routerPublication);
 
 
 

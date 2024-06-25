@@ -2,6 +2,7 @@ import { userM } from "../models/user.js";
 import bcrypt from 'bcrypt';
 import { createToken } from "../services/jwt.js";
 import fs from "fs";
+import { followThisUser, followUserIds } from "../services/followServices.js"
 import path from "path";
 
 export const testUserController = (req, res) => {
@@ -117,31 +118,50 @@ export const loginC = async (req, res) => {
 
 export const profileC = async (req, res) => {
     try {
-        const user = await userM.findById(req.params.id).select('-password -role -__v');
-        if (!user) {
-            return res.status(404).json({
-                message: 'El usuario no existe',
-                status: "error"
+        // Obtener el ID del usuario desde los parámetros de la URL
+        const userId = req.params.id;
+
+        // Verificar si el ID recibido del usuario autenticado existe
+        if (!req.user || !req.user.userId) {
+            return res.status(404).send({
+                status: "error",
+                message: "Usuario no autenticado"
             });
         }
 
-        const { ...userData } = user.toObject();
+        // Buscar al usuario en la BD, excluimos la contraseña, rol, versión.
+        const userProfile = await userM.findById(userId).select('-password -role -__v');
 
+        // Verificar si el usuario existe
+        if (!userProfile) {
+            return res.status(404).send({
+                status: "error",
+                message: "Usuario no encontrado"
+            });
+        }
+
+        // Información de seguimiento - (req.user.userId = Id del usuario autenticado) 
+        const followInfo = await followThisUser(req.user.userId, userId);
+
+        // Devolver la información del perfil del usuario
         return res.status(200).json({
-            message: 'Usuario encontrado correctamente',
             status: "success",
-            user: userData
+            user: userProfile,
+            followInfo
         });
 
     } catch (error) {
-        console.log(error);
-
-        return res.status(500).json({
-            message: 'Error al buscar el usuario',
-            status: "error"
+        console.log("Error al botener el perfil del usuario:", error);
+        return res.status(500).send({
+            status: "error",
+            message: "Error al obtener el perfil del usuario"
         });
     }
 }
+
+
+
+
 
 export const listUsersC = async (req, res) => {
     try {
@@ -162,6 +182,8 @@ export const listUsersC = async (req, res) => {
             });
         }
 
+        let followUsers = await followUserIds(req);
+
         return res.status(200).json({
             message: 'Usuarios encontrados correctamente',
             status: "success",
@@ -173,7 +195,9 @@ export const listUsersC = async (req, res) => {
             hasPrevPage: users.hasPrevPage,
             hasNextPage: users.hasNextPage,
             prevPage: users.prevPage,
-            nextPage: users.nextPage
+            nextPage: users.nextPage,
+            users_following: followUsers.following,
+            user_follow_me: followUsers.followers
         });
 
     } catch (error) {

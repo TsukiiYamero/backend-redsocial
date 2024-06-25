@@ -38,3 +38,31 @@ export const followUserIds = async (req, res) => {
         }
     }
 }
+
+
+export const followThisUser = async (identityUserId, profileUserId) => {
+    try {
+        //Verificar si los IDs son válidos
+        if (!identityUserId || !profileUserId)
+            throw new Error("IDs de los usuarios son inválidos");
+
+        // Consultar si yo como usuario identificado (identityUserId) sigo al otro usuario (profileUserId)
+        const following = await Follow.findOne({ "following_user": identityUserId, "followed_user": profileUserId });
+
+        // Consultar si el otro usuario (profileUserId) me sigue a mi o al usuario autenticado (identityUserId)
+        const follower = await Follow.findOne({ "following_user": profileUserId, "followed_user": identityUserId });
+
+        return {
+            following,
+            follower
+        }
+
+    } catch (error) {
+        console.log("Error al obtener la información del usuario.", error);
+        // devuelve null si no se siguen
+        return {
+            following: null,
+            follower: null
+        }
+    }
+}
