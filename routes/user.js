@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { avatarC, listUsersC, loginC, profileC, testUserController, updateUserC, uploadFilesC, userRegisterC } from "../controllers/user.js";
+import { avatarC, counters, listUsersC, loginC, profileC, testUserController, updateUserC, uploadFilesC, userRegisterC } from "../controllers/user.js";
 import { RouteListUsers, RouteLogin, RouteProfile, RouteUpdateUser, RouteUpload, RouteUser, RouteUserRegister } from "../utils/utils.js";
 import { ensureAuth } from "../middlewares/auth.js";
 import multer from "multer";
@@ -28,6 +28,8 @@ router.get(`${RouteListUsers}`, ensureAuth, listUsersC)
 
 router.post(RouteUserRegister, userRegisterC)
 router.post(RouteLogin, loginC)
+
+router.get('/counters/:id?', ensureAuth, counters);
 
 
 
